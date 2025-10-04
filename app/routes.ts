@@ -13,6 +13,7 @@ export default [
       route("campanas/difusion/:campaignNumber", "routes/campanas/difusion/$campaignNumber/index.tsx"),
       route("campanas/difusion/test-db", "routes/campanas/difusion/test-db.tsx"),
       route("campanas/analitica", "routes/campanas/analitica/index.tsx"),
+      route("campanas/analitica/:campaignNumber", "routes/campanas/analitica/$campaignNumber/index.tsx"),
     ]),
     route("modulo2", "routes/modulo2/index.tsx"),
     route("tests", "routes/tests/index.tsx"),
