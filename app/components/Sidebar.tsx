@@ -29,16 +29,17 @@ export default function Sidebar({ user, agents = [] }: SidebarProps) {
   return (
     <div className="fixed left-0 top-0 w-64 bg-white h-screen flex flex-col shadow-lg z-10">
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-900 mb-2">
-          Panel de Agentes IA
-        </h1>
-        <div className="text-sm text-gray-600">
-          <p className="font-medium">
-            {user.user_metadata?.full_name || "Usuario"}
-          </p>
-          <p className="text-gray-500">{user.email}</p>
+      <div className="p-6 border-b border-gray-200 text-center">
+        <div className="flex justify-center mb-4">
+          <img 
+            src="/logo-tradefood.jpeg" 
+            alt="Trade Food Logo" 
+            className="w-16 h-16 object-contain"
+          />
         </div>
+        <h1 className="text-lg font-bold text-gray-900">
+          Panel Administrativo
+        </h1>
       </div>
 
       {/* Navigation */}
@@ -50,9 +51,10 @@ export default function Sidebar({ user, agents = [] }: SidebarProps) {
               to="/dashboard"
               className={`flex items-center px-4 py-3 rounded-lg transition-colors duration-200 ${
                 isActive("/dashboard")
-                  ? "bg-orange-500 text-white"
+                  ? "text-white"
                   : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               }`}
+              style={isActive("/dashboard") ? { backgroundColor: '#7B1E21' } : {}}
             >
               <svg
                 className="w-5 h-5 mr-3"
@@ -83,9 +85,10 @@ export default function Sidebar({ user, agents = [] }: SidebarProps) {
               to="/agente"
               className={`flex items-center px-4 py-3 rounded-lg transition-colors duration-200 ${
                 isActive("/agente")
-                  ? "bg-orange-500 text-white"
+                  ? "text-white"
                   : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               }`}
+              style={isActive("/agente") ? { backgroundColor: '#7B1E21' } : {}}
             >
               <svg
                 className="w-5 h-5 mr-3"
@@ -110,9 +113,10 @@ export default function Sidebar({ user, agents = [] }: SidebarProps) {
               to="/historial"
               className={`flex items-center px-4 py-3 rounded-lg transition-colors duration-200 ${
                 isActive("/historial")
-                  ? "bg-orange-500 text-white"
+                  ? "text-white"
                   : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               }`}
+              style={isActive("/historial") ? { backgroundColor: '#7B1E21' } : {}}
             >
               <svg
                 className="w-5 h-5 mr-3"
@@ -137,9 +141,10 @@ export default function Sidebar({ user, agents = [] }: SidebarProps) {
               onClick={() => setIsCampanasOpen(!isCampanasOpen)}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors duration-200 ${
                 isCampanasActive()
-                  ? "bg-orange-500 text-white"
+                  ? "text-white"
                   : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               }`}
+              style={isCampanasActive() ? { backgroundColor: '#7B1E21' } : {}}
             >
               <div className="flex items-center">
                 <svg
@@ -182,9 +187,10 @@ export default function Sidebar({ user, agents = [] }: SidebarProps) {
                     to="/campanas/difusion"
                     className={`flex items-center px-4 py-2 rounded-lg transition-colors duration-200 text-sm ${
                       isActive("/campanas/difusion")
-                        ? "bg-orange-100 text-orange-700"
+                        ? "text-white"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     }`}
+                    style={isActive("/campanas/difusion") ? { backgroundColor: '#7B1E21' } : {}}
                   >
                     <svg
                       className="w-4 h-4 mr-3"
@@ -207,9 +213,10 @@ export default function Sidebar({ user, agents = [] }: SidebarProps) {
                     to="/campanas/analitica"
                     className={`flex items-center px-4 py-2 rounded-lg transition-colors duration-200 text-sm ${
                       isActive("/campanas/analitica")
-                        ? "bg-orange-100 text-orange-700"
+                        ? "text-white"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     }`}
+                    style={isActive("/campanas/analitica") ? { backgroundColor: '#7B1E21' } : {}}
                   >
                     <svg
                       className="w-4 h-4 mr-3"
@@ -233,8 +240,19 @@ export default function Sidebar({ user, agents = [] }: SidebarProps) {
         </ul>
       </nav>
 
-        {/* Footer - Cerrar Sesión */}
+        {/* Footer - Usuario y Cerrar Sesión */}
         <div className="p-4 border-t border-gray-200">
+          {/* Información del Usuario */}
+          <div className="mb-4 text-center">
+            <div className="text-sm text-gray-600">
+              <p className="font-medium text-gray-900">
+                {user.user_metadata?.full_name || "Usuario"}
+              </p>
+              <p className="text-gray-500 text-xs">{user.email}</p>
+            </div>
+          </div>
+          
+          {/* Botón Cerrar Sesión */}
           <Form method="post" action="/logout">
             <button
               type="submit"

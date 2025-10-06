@@ -265,9 +265,10 @@ export default function HistorialPage() {
                         <td className="px-4 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-8 w-8">
-                              <div className="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center">
+                              <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: '#7B1E21', opacity: 0.1 }}>
                                 <svg
-                                  className="h-4 w-4 text-orange-500"
+                                  className="h-4 w-4"
+                                  style={{ color: '#7B1E21' }}
                                   fill="none"
                                   stroke="currentColor"
                                   viewBox="0 0 24 24"
@@ -289,7 +290,7 @@ export default function HistorialPage() {
                           </div>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-600">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: '#7B1E21', color: 'white' }}>
                             v{record.version_number}
                           </span>
                         </td>

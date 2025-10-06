@@ -330,7 +330,10 @@ export default function AnaliticasPage() {
            <div className="flex items-center gap-3">
              <button
                onClick={handleUploadClick}
-               className="px-4 py-2 bg-orange-500 text-white hover:bg-orange-600 rounded-lg transition-colors duration-200 text-sm lg:text-base font-medium"
+               className="px-4 py-2 text-white rounded-lg transition-colors duration-200 text-sm lg:text-base font-medium"
+               style={{ backgroundColor: '#7B1E21' }}
+               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a1518'}
+               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#7B1E21'}
              >
                📊 Subir CSV
              </button>
@@ -370,7 +373,10 @@ export default function AnaliticasPage() {
                  </div>
                  <button
                    onClick={handleUploadClick}
-                   className="px-6 py-3 bg-orange-500 text-white hover:bg-orange-600 rounded-lg transition-colors duration-200 font-medium"
+                   className="px-6 py-3 text-white rounded-lg transition-colors duration-200 font-medium"
+                   style={{ backgroundColor: '#7B1E21' }}
+                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a1518'}
+                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#7B1E21'}
                  >
                    📊 Subir Primer Reporte
                  </button>
@@ -418,7 +424,10 @@ export default function AnaliticasPage() {
                          <td className="px-4 py-4 whitespace-nowrap">
                            <a
                              href={`/campanas/analitica/${reporte.campaign_name}`}
-                             className="text-orange-600 hover:text-orange-900 font-medium text-sm"
+                             className="font-medium text-sm"
+                             style={{ color: '#7B1E21' }}
+                             onMouseEnter={(e) => e.currentTarget.style.color = '#5a1518'}
+                             onMouseLeave={(e) => e.currentTarget.style.color = '#7B1E21'}
                            >
                              Ver Detalles
                            </a>

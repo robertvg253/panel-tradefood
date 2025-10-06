@@ -251,8 +251,8 @@ export default function CampanasDifusionPage() {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mr-4">
-              <svg className="h-6 w-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center justify-center h-12 w-12 rounded-full mr-4" style={{ backgroundColor: '#7B1E21', opacity: 0.1 }}>
+              <svg className="h-6 w-6" style={{ color: '#7B1E21' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
@@ -264,7 +264,10 @@ export default function CampanasDifusionPage() {
           <div className="flex space-x-3">
             <button
               onClick={handleUploadClick}
-              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
+              className="text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
+              style={{ backgroundColor: '#7B1E21' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a1518'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#7B1E21'}
             >
               <svg className="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -384,7 +387,16 @@ export default function CampanasDifusionPage() {
                       <div className="flex space-x-2">
                         <Link
                           to={`/campanas/difusion/${report.campaign_name}`}
-                          className="text-orange-600 hover:text-orange-900 bg-orange-50 hover:bg-orange-100 px-3 py-1 rounded-md text-xs font-medium transition-colors duration-200"
+                          className="px-3 py-1 rounded-md text-xs font-medium transition-colors duration-200"
+                          style={{ color: 'white', backgroundColor: '#7B1E21' }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = 'white';
+                            e.currentTarget.style.backgroundColor = '#5a1518';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.color = 'white';
+                            e.currentTarget.style.backgroundColor = '#7B1E21';
+                          }}
                         >
                           Ver Detalles
                         </Link>

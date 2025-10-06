@@ -167,7 +167,10 @@ export default function HistorialVersionPage() {
             </a>
             <a
               href="/agente"
-              className="px-4 py-2 bg-orange-500 text-white hover:bg-orange-600 rounded-lg transition-colors duration-200 text-sm lg:text-base"
+              className="px-4 py-2 text-white rounded-lg transition-colors duration-200 text-sm lg:text-base"
+              style={{ backgroundColor: '#7B1E21' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a1518'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#7B1E21'}
             >
               Ver Versión Actual
             </a>
@@ -176,7 +179,10 @@ export default function HistorialVersionPage() {
                 // TODO: Implementar funcionalidad de restaurar
                 alert('Funcionalidad de restaurar pendiente de implementar');
               }}
-              className="px-4 py-2 bg-orange-500 text-white hover:bg-orange-600 rounded-lg transition-colors duration-200 text-sm lg:text-base font-medium"
+              className="px-4 py-2 text-white rounded-lg transition-colors duration-200 text-sm lg:text-base font-medium"
+              style={{ backgroundColor: '#7B1E21' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a1518'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#7B1E21'}
             >
               🔄 Restaurar Versión
             </button>

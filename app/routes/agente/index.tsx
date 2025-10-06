@@ -267,7 +267,8 @@ function EditableField({ fieldKey, label, value, isEditing, onChange, placeholde
           value={value}
           onChange={(e) => onChange(fieldKey, e.target.value)}
           placeholder={placeholder}
-          className="flex-1 w-full bg-white border border-gray-300 rounded-lg p-4 text-gray-900 text-sm placeholder-gray-500 focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none overflow-y-auto"
+          className="flex-1 w-full bg-white border border-gray-300 rounded-lg p-4 text-gray-900 text-sm placeholder-gray-500 focus:ring-2 focus:border-transparent resize-none overflow-y-auto"
+          style={{ '--tw-ring-color': '#7B1E21' } as React.CSSProperties}
         />
       </div>
     );
@@ -397,7 +398,10 @@ export default function AgenteFormPage() {
                 </a>
                 <button
                   onClick={handleEdit}
-                  className="px-4 py-2 bg-orange-500 text-white hover:bg-orange-600 rounded-lg transition-all duration-200 text-sm lg:text-base font-medium"
+                  className="px-4 py-2 text-white rounded-lg transition-all duration-200 text-sm lg:text-base font-medium"
+                  style={{ backgroundColor: '#7B1E21' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a1518'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#7B1E21'}
                 >
                    Editar
                 </button>

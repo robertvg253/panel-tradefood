@@ -41,7 +41,10 @@ export default function DashboardPage() {
           {/* Botón principal para crear agente */}
           <Link
             to="/agent/new"
-            className="inline-flex items-center bg-orange-500 text-white font-semibold py-4 px-8 rounded-xl hover:bg-orange-600 transition-all duration-200 text-lg shadow-lg"
+            className="inline-flex items-center text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 text-lg shadow-lg"
+            style={{ backgroundColor: '#7B1E21' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a1518'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#7B1E21'}
           >
             <svg
               className="w-6 h-6 mr-3"
@@ -65,9 +68,10 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
           <div className="flex items-center">
-            <div className="p-3 bg-orange-100 rounded-lg">
+            <div className="p-3 rounded-lg" style={{ backgroundColor: '#7B1E21', opacity: 0.1 }}>
               <svg
-                className="w-6 h-6 text-orange-500"
+                className="w-6 h-6"
+                style={{ color: '#7B1E21' }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -89,9 +93,10 @@ export default function DashboardPage() {
 
         <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
           <div className="flex items-center">
-            <div className="p-3 bg-orange-100 rounded-lg">
+            <div className="p-3 rounded-lg" style={{ backgroundColor: '#7B1E21', opacity: 0.1 }}>
               <svg
-                className="w-6 h-6 text-orange-500"
+                className="w-6 h-6"
+                style={{ color: '#7B1E21' }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -113,9 +118,10 @@ export default function DashboardPage() {
 
         <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
           <div className="flex items-center">
-            <div className="p-3 bg-orange-100 rounded-lg">
+            <div className="p-3 rounded-lg" style={{ backgroundColor: '#7B1E21', opacity: 0.1 }}>
               <svg
-                className="w-6 h-6 text-orange-500"
+                className="w-6 h-6"
+                style={{ color: '#7B1E21' }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -144,9 +150,10 @@ export default function DashboardPage() {
             to="/agent/new"
             className="flex items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 group"
           >
-            <div className="p-2 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors duration-200">
+            <div className="p-2 rounded-lg transition-colors duration-200" style={{ backgroundColor: '#7B1E21', opacity: 0.1 }}>
               <svg
-                className="w-5 h-5 text-orange-500"
+                className="w-5 h-5"
+                style={{ color: '#7B1E21' }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -169,9 +176,10 @@ export default function DashboardPage() {
             to="/modulo2"
             className="flex items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 group"
           >
-            <div className="p-2 bg-orange-100 rounded-lg group-hover:bg-orange-200 transition-colors duration-200">
+            <div className="p-2 rounded-lg transition-colors duration-200" style={{ backgroundColor: '#7B1E21', opacity: 0.1 }}>
               <svg
-                className="w-5 h-5 text-orange-500"
+                className="w-5 h-5"
+                style={{ color: '#7B1E21' }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

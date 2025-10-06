@@ -112,7 +112,8 @@ export default function UploadAnalyticsModal({ isOpen, onClose }: UploadAnalytic
                   value={campaignName}
                   onChange={(e) => setCampaignName(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 text-gray-900"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 text-gray-900"
+                  style={{ '--tw-ring-color': '#7B1E21' } as React.CSSProperties}
                   placeholder="Ej: Campaña Callbell Enero 2024"
                 />
               </div>
@@ -128,7 +129,7 @@ export default function UploadAnalyticsModal({ isOpen, onClose }: UploadAnalytic
                       <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     <div className="flex text-sm text-gray-600">
-                      <label htmlFor="csvFile" className="relative cursor-pointer bg-white rounded-md font-medium text-orange-600 hover:text-orange-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-orange-500">
+                      <label htmlFor="csvFile" className="relative cursor-pointer bg-white rounded-md font-medium focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2" style={{ color: '#7B1E21', '--tw-ring-color': '#7B1E21' } as React.CSSProperties}>
                         <span>Seleccionar archivo</span>
                         <input
                           id="csvFile"
@@ -166,8 +167,8 @@ export default function UploadAnalyticsModal({ isOpen, onClose }: UploadAnalytic
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
-                      className="bg-orange-500 h-2 rounded-full transition-all duration-300 ease-out"
-                      style={{ width: `${uploadProgress}%` }}
+                      className="h-2 rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${uploadProgress}%`, backgroundColor: '#7B1E21' }}
                     ></div>
                   </div>
                 </div>
@@ -209,7 +210,10 @@ export default function UploadAnalyticsModal({ isOpen, onClose }: UploadAnalytic
                 type="submit"
                 form="upload-form"
                 disabled={isSubmitting || !selectedFile || !campaignName}
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+                className="flex-1 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+                style={{ backgroundColor: '#7B1E21', '--tw-ring-color': '#7B1E21' } as React.CSSProperties}
+                onMouseEnter={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = '#5a1518')}
+                onMouseLeave={(e) => !e.currentTarget.disabled && (e.currentTarget.style.backgroundColor = '#7B1E21')}
               >
                 {isSubmitting ? (
                   <div className="flex items-center justify-center">
