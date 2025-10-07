@@ -91,7 +91,7 @@ export async function action({ request }: ActionFunctionArgs) {
     
     console.log("📊 Líneas procesadas:", lines.length, "Registros de datos:", totalRecords);
 
-    // Validar formato del CSV (debe tener exactamente dos columnas: teléfono y nombre)
+    // Validar formato del CSV (debe tener exactamente dos columnas: nombre y teléfono)
     if (lines.length < 2) {
       console.error("❌ CSV inválido: menos de 2 líneas");
       return {
@@ -105,7 +105,7 @@ export async function action({ request }: ActionFunctionArgs) {
       if (columns.length !== 2) {
         console.error(`❌ Línea ${i + 1} tiene ${columns.length} columnas`);
         return {
-          error: `Línea ${i + 1}: El archivo debe tener exactamente dos columnas (teléfono y nombre). Se encontraron ${columns.length} columnas.`
+          error: `Línea ${i + 1}: El archivo debe tener exactamente dos columnas (nombre y teléfono). Se encontraron ${columns.length} columnas.`
         };
       }
     }
@@ -139,11 +139,11 @@ export async function action({ request }: ActionFunctionArgs) {
     console.log("📱 Procesando", csvLines.length, "registros de difusión");
     
     const campaignRecords = csvLines.map((line, index) => {
-      const [telefono, nombre] = line.split(',').map(col => col.trim());
+      const [nombre, telefono] = line.split(',').map(col => col.trim());
       
       // Validar que ambos campos no estén vacíos
       if (!telefono || !nombre) {
-        throw new Error(`Línea ${index + 2}: Teléfono o nombre de contacto vacío`);
+        throw new Error(`Línea ${index + 2}: Nombre o teléfono de contacto vacío`);
       }
       
       return {

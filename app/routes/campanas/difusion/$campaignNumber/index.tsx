@@ -181,10 +181,10 @@ export default function CampaignDetailPage() {
                     #
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Teléfono
+                    Nombre
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nombre
+                    Teléfono
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Estado
@@ -199,12 +199,12 @@ export default function CampaignDetailPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {record.telefono}
+                        {record.nombre}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {record.nombre}
+                        {record.telefono}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

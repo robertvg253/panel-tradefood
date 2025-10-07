@@ -195,17 +195,17 @@ export default function UploadCampaignModal({ isOpen, onClose }: UploadCampaignM
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h4 className="text-sm font-medium text-blue-900 mb-2">Formato del CSV</h4>
                 <ul className="text-xs text-blue-700 space-y-1">
-                  <li>• Dos columnas: Número de teléfono y Nombre de contacto</li>
-                  <li>• El archivo debe tener encabezado en la primera fila (ej: "telefono,nombre")</li>
+                  <li>• Dos columnas: Nombre de contacto y Número de teléfono</li>
+                  <li>• El archivo debe tener encabezado en la primera fila (ej: "nombre,telefono")</li>
                   <li>• Formato de teléfono: +1234567890 o 1234567890</li>
                   <li>• Máximo 10,000 registros por archivo</li>
                 </ul>
                 <div className="mt-2 p-2 bg-blue-100 rounded text-xs text-blue-800">
                   <strong>Ejemplo:</strong><br />
-                  telefono,nombre<br />
-                  +1234567890,Juan Pérez<br />
-                  0987654321,María García<br />
-                  +5551234567,Carlos López
+                  nombre,telefono<br />
+                  Juan Pérez,+1234567890<br />
+                  María García,0987654321<br />
+                  Carlos López,+5551234567
                 </div>
               </div>
 
