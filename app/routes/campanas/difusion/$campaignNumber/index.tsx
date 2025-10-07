@@ -1,6 +1,7 @@
 import { type LoaderFunctionArgs, useLoaderData, Link } from "react-router";
 import { supabaseServer, supabaseAdmin } from "~/supabase/supabaseServer";
 import { redirect } from "react-router";
+import StandardContainer, { PageHeader, TableContainer } from "~/components/StandardContainer";
 
 // Loader para obtener los detalles de una campaña específica
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -92,25 +93,13 @@ export default function CampaignDetailPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="h-screen max-h-screen flex flex-col overflow-hidden bg-gray-50">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Link
-              to="/campanas/difusion"
-              className="mr-4 text-gray-400 hover:text-gray-600 transition-colors duration-200"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{campaignReport.campaign_name}</h1>
-              <p className="text-gray-600">Detalles de la campaña de difusión</p>
-            </div>
-          </div>
-          <div className="flex space-x-3">
+      <PageHeader
+        title={campaignReport.campaign_name}
+        subtitle="Detalles de la campaña de difusión"
+        actions={
+          <>
             <button 
               onClick={exportTelefonosCSV}
               className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
@@ -126,50 +115,54 @@ export default function CampaignDetailPage() {
             >
               Volver a Lotes
             </Link>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
-      {/* Información de la Campaña */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Información de la Campaña</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-sm font-medium text-blue-900">Nombre de Campaña</h3>
-            <p className="text-lg font-semibold text-blue-700">{campaignReport.campaign_name}</p>
-          </div>
-          <div className="bg-green-50 p-4 rounded-lg">
-            <h3 className="text-sm font-medium text-green-900">Total de Registros</h3>
-            <p className="text-lg font-semibold text-green-700">{campaignReport.total_records}</p>
-          </div>
-          <div className="bg-orange-50 p-4 rounded-lg">
-            <h3 className="text-sm font-medium text-orange-900">Fecha de Subida</h3>
-            <p className="text-lg font-semibold text-orange-700">
-              {new Date(campaignReport.uploaded_at).toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </p>
-          </div>
-        </div>
-        {campaignReport.description && (
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900">Descripción</h3>
-            <p className="text-gray-700">{campaignReport.description}</p>
-          </div>
-        )}
-      </div>
+      {/* Contenido Principal */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6">
 
-      {/* Tabla de Registros de Difusión */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Registros de Difusión ({difusionRecords.length})
-          </h2>
-        </div>
+          {/* Información de la Campaña */}
+          <StandardContainer>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Información de la Campaña</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h3 className="text-sm font-medium text-blue-900">Nombre de Campaña</h3>
+                <p className="text-lg font-semibold text-blue-700">{campaignReport.campaign_name}</p>
+              </div>
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h3 className="text-sm font-medium text-green-900">Total de Registros</h3>
+                <p className="text-lg font-semibold text-green-700">{campaignReport.total_records}</p>
+              </div>
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <h3 className="text-sm font-medium text-orange-900">Fecha de Subida</h3>
+                <p className="text-lg font-semibold text-orange-700">
+                  {new Date(campaignReport.uploaded_at).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              </div>
+            </div>
+            {campaignReport.description && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <h3 className="text-sm font-medium text-gray-900">Descripción</h3>
+                <p className="text-gray-700">{campaignReport.description}</p>
+              </div>
+            )}
+          </StandardContainer>
+
+          {/* Tabla de Registros de Difusión */}
+          <TableContainer>
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Registros de Difusión ({difusionRecords.length})
+              </h2>
+            </div>
         
         {difusionRecords.length === 0 ? (
           <div className="text-center py-12">
@@ -225,12 +218,14 @@ export default function CampaignDetailPage() {
             </table>
           </div>
         )}
-      </div>
+          </TableContainer>
 
-      {/* Información de registros */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="text-sm text-gray-500">
-          Mostrando {difusionRecords.length} de {campaignReport.total_records} registros de difusión
+          {/* Información de registros */}
+          <StandardContainer>
+            <div className="text-sm text-gray-500">
+              Mostrando {difusionRecords.length} de {campaignReport.total_records} registros de difusión
+            </div>
+          </StandardContainer>
         </div>
       </div>
     </div>

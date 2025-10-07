@@ -5,6 +5,7 @@ import { useState } from "react";
 import Toast from "~/components/Toast";
 import { useToast } from "~/hooks/useToast";
 import UploadAnalyticsModal from "~/components/UploadAnalyticsModal";
+import StandardContainer, { PageHeader, TableContainer } from "~/components/StandardContainer";
 
 // Función para cargar datos de analíticas
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -317,35 +318,29 @@ export default function AnaliticasPage() {
   return (
     <div className="h-screen max-h-screen flex flex-col overflow-hidden bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4 lg:p-6 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-1">
-              Analíticas de Campañas
-            </h1>
-            <p className="text-sm lg:text-base text-gray-600">
-              Análisis de reportes de Callbell
-            </p>
-          </div>
-           <div className="flex items-center gap-3">
-             <button
-               onClick={handleUploadClick}
-               className="px-4 py-2 text-white rounded-lg transition-colors duration-200 text-sm lg:text-base font-medium"
-               style={{ backgroundColor: '#7B1E21' }}
-               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a1518'}
-               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#7B1E21'}
-             >
-               📊 Subir CSV
-             </button>
+      <PageHeader
+        title="Analíticas de Campañas"
+        subtitle="Análisis de reportes de Callbell"
+        actions={
+          <>
+            <button
+              onClick={handleUploadClick}
+              className="px-4 py-2 text-white rounded-lg transition-colors duration-200 text-sm lg:text-base font-medium"
+              style={{ backgroundColor: '#7B1E21' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a1518'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#7B1E21'}
+            >
+              📊 Subir CSV
+            </button>
             <a
               href="/campanas/difusion"
               className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors duration-200 text-sm lg:text-base"
             >
               ← Volver a Difusión
             </a>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
 
       {/* Contenido Principal */}
@@ -353,7 +348,7 @@ export default function AnaliticasPage() {
         <div className="h-full overflow-y-auto p-4 lg:p-6">
            {reportes.length === 0 ? (
              <div className="flex items-center justify-center h-full">
-               <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 text-center max-w-md">
+               <StandardContainer className="text-center max-w-md">
                  <div className="text-gray-600 mb-6">
                    <svg
                      className="w-16 h-16 mx-auto mb-4"
@@ -380,10 +375,10 @@ export default function AnaliticasPage() {
                  >
                    📊 Subir Primer Reporte
                  </button>
-               </div>
+               </StandardContainer>
              </div>
            ) : (
-             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+             <TableContainer>
                {/* Tabla de Reportes */}
                <div className="overflow-x-auto">
                  <table className="w-full">
@@ -437,7 +432,7 @@ export default function AnaliticasPage() {
                    </tbody>
                  </table>
                </div>
-             </div>
+             </TableContainer>
            )}
         </div>
       </div>

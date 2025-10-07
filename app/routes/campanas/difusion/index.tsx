@@ -3,6 +3,7 @@ import { supabaseServer, supabaseAdmin } from "~/supabase/supabaseServer";
 import { redirect } from "react-router";
 import { useState, useEffect } from "react";
 import UploadCampaignModal from "~/components/UploadCampaignModal";
+import StandardContainer, { PageHeader, TableContainer } from "~/components/StandardContainer";
 
 // Verificar autenticación y obtener reportes de campañas de difusión
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -246,22 +247,13 @@ export default function CampanasDifusionPage() {
   }, [actionData?.success, navigate]);
 
   return (
-    <div className="space-y-6">
+    <div className="h-screen max-h-screen flex flex-col overflow-hidden bg-gray-50">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="flex items-center justify-center h-12 w-12 rounded-full mr-4" style={{ backgroundColor: '#7B1E21', opacity: 0.1 }}>
-              <svg className="h-6 w-6" style={{ color: '#7B1E21' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Campañas Difusión</h1>
-              <p className="text-gray-600">Administra y supervisa las campañas de difusión</p>
-            </div>
-          </div>
-          <div className="flex space-x-3">
+      <PageHeader
+        title="Campañas Difusión"
+        subtitle="Administra y supervisa las campañas de difusión"
+        actions={
+          <>
             <button
               onClick={handleUploadClick}
               className="text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200"
@@ -305,28 +297,32 @@ export default function CampanasDifusionPage() {
               </svg>
               Exportar
             </button>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
-      {/* Mensajes de éxito/error */}
-      {actionData?.error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-600">{actionData.error}</p>
-        </div>
-      )}
+      {/* Contenido Principal */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto p-4 lg:p-6 space-y-6">
 
-      {actionData?.success && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <p className="text-green-600">{actionData.success}</p>
-        </div>
-      )}
+          {/* Mensajes de éxito/error */}
+          {actionData?.error && (
+            <StandardContainer className="bg-red-50 border-red-200">
+              <p className="text-red-600">{actionData.error}</p>
+            </StandardContainer>
+          )}
 
-      {/* Tabla de Campañas */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Lotes de Campañas</h2>
-        </div>
+          {actionData?.success && (
+            <StandardContainer className="bg-green-50 border-green-200">
+              <p className="text-green-600">{actionData.success}</p>
+            </StandardContainer>
+          )}
+
+          {/* Tabla de Campañas */}
+          <TableContainer>
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Lotes de Campañas</h2>
+            </div>
         
         {campaignReports.length === 0 ? (
           <div className="text-center py-12">
@@ -411,6 +407,8 @@ export default function CampanasDifusionPage() {
             </table>
           </div>
         )}
+          </TableContainer>
+        </div>
       </div>
 
       {/* Modal de Subida */}

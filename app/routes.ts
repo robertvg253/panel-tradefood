@@ -5,6 +5,10 @@ export default [
   route("home", "routes/home.tsx"),
   layout("routes/_layout.tsx", [
     route("dashboard", "routes/dashboard/index.tsx"),
+    route("agentes", "routes/agentes/index.tsx"),
+    route("agente/:promptId/ver", "routes/agente.$promptId.ver.tsx"),
+    route("agente/:promptId/editar", "routes/agente.$promptId.editar.tsx"),
+    route("agente/:promptId/historial", "routes/agente.$promptId.historial.tsx"),
     route("historial", "routes/historial/index.tsx"),
     route("historial/:versionId", "routes/historial/$versionId.tsx"),
     route("agente", "routes/agente/index.tsx"),

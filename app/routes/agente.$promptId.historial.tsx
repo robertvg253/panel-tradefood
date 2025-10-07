@@ -1,9 +1,8 @@
 import { type LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
 import { supabaseServer } from "~/supabase/supabaseServer";
-import StandardContainer, { PageHeader, TableContainer } from "~/components/StandardContainer";
 
-// Función para cargar datos del historial
-export async function loader({ request }: LoaderFunctionArgs) {
+// Función para cargar datos del historial de un agente específico
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const session = await supabaseServer.auth.getSession();
   
   if (!session.data.session) {
@@ -11,19 +10,24 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   try {
-    // Obtener información del usuario actual de la sesión
-    const currentUser = session.data.session.user;
-    console.log("👤 Usuario actual de la sesión:", {
-      id: currentUser.id,
-      email: currentUser.email,
-      user_metadata: currentUser.user_metadata
-    });
+    // Obtener información del agente
+    const { data: agent, error: agentError } = await supabaseServer
+      .from('tradefood_prompt_active')
+      .select('id, name')
+      .eq('id', params.promptId)
+      .single();
 
-    // Consultar la tabla tradefood_prompt_history para obtener el historial
-    console.log("🔍 Consultando tabla tradefood_prompt_history...");
+    if (agentError) {
+      console.error("❌ Error loading agent:", agentError);
+      throw new Response("Agente no encontrado", { status: 404 });
+    }
+
+    // Obtener el historial específico del agente usando config_id
+    console.log("🔍 Consultando historial para agente:", agent.name, "ID:", agent.id);
     const { data: historialData, error: historialError } = await supabaseServer
       .from('tradefood_prompt_history')
       .select('id, version_number, modified_by_user_id, modified_at, config_id')
+      .eq('config_id', agent.id)
       .order('version_number', { ascending: false });
 
     if (historialError) {
@@ -37,17 +41,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     }
 
     console.log("📋 Historial consultado exitosamente:", historialData?.length || 0, "registros");
-    console.log("📋 Primeros registros:", historialData?.slice(0, 3).map(r => ({
-      id: r.id,
-      version_number: r.version_number,
-      modified_by_user_id: r.modified_by_user_id,
-      modified_at: r.modified_at
-    })));
 
     // Si no hay datos, retornar array vacío
     if (!historialData || historialData.length === 0) {
-      console.log("📋 No hay registros de historial");
-      return { historial: [] };
+      console.log("📋 No hay registros de historial para este agente");
+      return { agent, historial: [] };
     }
 
     // Obtener información de usuarios por separado
@@ -121,13 +119,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
             full_name: 'Usuario del Sistema', 
             role: 'Sistema' 
           };
-        } else if (record.modified_by_user_id === currentUser.id) {
-          // Si el modified_by_user_id coincide con el usuario actual, usar su información de la sesión
-          usuario_info = {
-            email: currentUser.email,
-            full_name: currentUser.user_metadata?.full_name || currentUser.email,
-            role: currentUser.user_metadata?.role || 'Usuario'
-          };
         } else {
           // Para casos donde el usuario no existe en la tabla users pero tiene un ID
           usuario_info = { 
@@ -140,17 +131,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
       return {
         ...record,
-        agente_nombre: 'Agente Tradefood', // Nombre fijo para el agente Tradefood
+        agente_nombre: agent.name,
         usuario_info
       };
     });
 
     console.log("✅ Historial procesado exitosamente:", historial.length, "registros");
 
-    return { historial };
+    return { agent, historial };
   } catch (error) {
     console.error("❌ Error en loader de historial:", error);
-    return { historial: [] };
+    return { agent: null, historial: [] };
   }
 }
 
@@ -178,31 +169,73 @@ function getUserRole(usuarioInfo: any) {
   return usuarioInfo.role || 'Usuario';
 }
 
-export default function HistorialPage() {
-  const { historial } = useLoaderData<typeof loader>();
+export default function HistorialAgentePage() {
+  const { agent, historial } = useLoaderData<typeof loader>();
+
+  if (!agent) {
+    return (
+      <div className="h-screen max-h-screen flex flex-col overflow-hidden bg-gray-50">
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Agente no encontrado</h1>
+            <a
+              href="/agentes"
+              className="px-4 py-2 text-white rounded-lg transition-colors duration-200"
+              style={{ backgroundColor: '#7B1E21' }}
+            >
+              ← Volver a Agentes
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen max-h-screen flex flex-col overflow-hidden bg-gray-50">
       {/* Header */}
-      <PageHeader
-        title="Historial de Cambios"
-        subtitle="Registro de todas las modificaciones realizadas en los agentes"
-        actions={
-          <a
-            href="/dashboard"
-            className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors duration-200 text-sm lg:text-base"
-          >
-            ← Volver al Dashboard
-          </a>
-        }
-      />
+      <div className="bg-white border-b border-gray-200 p-4 lg:p-6 flex-shrink-0">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-1">
+              Historial de {agent.name}
+            </h1>
+            <p className="text-sm lg:text-base text-gray-600">
+              Registro de todas las modificaciones realizadas en este agente
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <a
+              href="/agentes"
+              className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors duration-200 text-sm lg:text-base"
+            >
+              ← Volver a Agentes
+            </a>
+            <a
+              href={`/agente/${agent.id}/ver`}
+              className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors duration-200 text-sm lg:text-base"
+            >
+              👁️ Ver Agente
+            </a>
+            <a
+              href={`/agente/${agent.id}/editar`}
+              className="px-4 py-2 text-white rounded-lg transition-colors duration-200 text-sm lg:text-base font-medium"
+              style={{ backgroundColor: '#7B1E21' }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a1518'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#7B1E21'}
+            >
+              ✏️ Editar Agente
+            </a>
+          </div>
+        </div>
+      </div>
 
       {/* Contenido Principal */}
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-y-auto p-4 lg:p-6">
           {historial.length === 0 ? (
             <div className="flex items-center justify-center h-full">
-              <StandardContainer className="text-center max-w-md">
+              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 text-center max-w-md">
                 <div className="text-gray-600 mb-6">
                   <svg
                     className="w-16 h-16 mx-auto mb-4"
@@ -218,12 +251,12 @@ export default function HistorialPage() {
                     />
                   </svg>
                   <p className="text-lg">No hay registros de historial</p>
-                  <p className="text-sm mt-2">Los cambios aparecerán aquí una vez que se editen los agentes</p>
+                  <p className="text-sm mt-2">Los cambios aparecerán aquí una vez que se edite el agente</p>
                 </div>
-              </StandardContainer>
+              </div>
             </div>
           ) : (
-            <TableContainer>
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
               {/* Tabla de Historial */}
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -243,6 +276,9 @@ export default function HistorialPage() {
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
                         Fecha de Modificación
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">
+                        Acciones
                       </th>
                     </tr>
                   </thead>
@@ -305,12 +341,23 @@ export default function HistorialPage() {
                             {formatDate(record.modified_at)}
                           </div>
                         </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <a
+                            href={`/historial/${record.id}`}
+                            className="text-sm font-medium"
+                            style={{ color: '#7B1E21' }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#5a1518'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#7B1E21'}
+                          >
+                            Ver Detalles
+                          </a>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            </TableContainer>
+            </div>
           )}
         </div>
       </div>

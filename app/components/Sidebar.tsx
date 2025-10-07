@@ -79,16 +79,16 @@ export default function Sidebar({ user, agents = [] }: SidebarProps) {
             </Link>
           </li>
 
-          {/* Agente IA */}
+          {/* Agentes IA */}
           <li>
             <Link
-              to="/agente"
+              to="/agentes"
               className={`flex items-center px-4 py-3 rounded-lg transition-colors duration-200 ${
-                isActive("/agente")
+                isActive("/agentes")
                   ? "text-white"
                   : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               }`}
-              style={isActive("/agente") ? { backgroundColor: '#7B1E21' } : {}}
+              style={isActive("/agentes") ? { backgroundColor: '#7B1E21' } : {}}
             >
               <svg
                 className="w-5 h-5 mr-3"
@@ -103,37 +103,10 @@ export default function Sidebar({ user, agents = [] }: SidebarProps) {
                   d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                 />
               </svg>
-              Agente IA
+              Agentes IA
             </Link>
           </li>
 
-          {/* Historial */}
-          <li>
-            <Link
-              to="/historial"
-              className={`flex items-center px-4 py-3 rounded-lg transition-colors duration-200 ${
-                isActive("/historial")
-                  ? "text-white"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-              }`}
-              style={isActive("/historial") ? { backgroundColor: '#7B1E21' } : {}}
-            >
-              <svg
-                className="w-5 h-5 mr-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              Historial
-            </Link>
-          </li>
 
           {/* Campañas - Menú Desplegable */}
           <li>

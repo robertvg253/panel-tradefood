@@ -3,44 +3,44 @@ import { supabaseServer, supabaseAdmin } from "~/supabase/supabaseServer";
 import { useState, useEffect } from "react";
 import Toast from "~/components/Toast";
 import { useToast } from "~/hooks/useToast";
-import StandardContainer, { PageHeader } from "~/components/StandardContainer";
 
-// Función para cargar datos del prompt activo
-export async function loader({ request }: LoaderFunctionArgs) {
+// Función para cargar datos del agente específico
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const session = await supabaseServer.auth.getSession();
   
   if (!session.data.session) {
     throw redirect("/");
   }
 
-  // Consultar la tabla tradefood_prompt_active para obtener la configuración actual
-  const { data: activePrompt, error } = await supabaseServer
-    .from('tradefood_prompt_active')
-    .select('*')
-    .single();
-  
-  if (error) {
-    console.error("Error loading active prompt:", error);
-    // Si no existe un prompt activo, devolver valores por defecto
-    return { 
-      activePrompt: {
-        prompt_identidad: '',
-        prompt_personalidad_tono: '',
-        prompt_frases_guia_estilo: '',
-        prompt_reglas_limitaciones: '',
-        prompt_flujos_atencion: '',
-        prompt_informacion_empresa: '',
-        prompt_preguntas_frecuentes: '',
-        version_number: 0
-      }
-    };
+  try {
+    // Obtener el agente específico
+    console.log("🔍 Cargando agente para edición:", params.promptId);
+    const { data: agent, error } = await supabaseServer
+      .from('tradefood_prompt_active')
+      .select('*')
+      .eq('id', params.promptId)
+      .single();
+
+    if (error) {
+      console.error("❌ Error loading agent:", error);
+      throw new Response("Agente no encontrado", { status: 404 });
+    }
+
+    console.log("✅ Agente cargado para edición:", {
+      id: agent.id,
+      name: agent.name,
+      version_number: agent.version_number
+    });
+
+    return { agent };
+  } catch (error) {
+    console.error("❌ Error en loader de agente:", error);
+    throw new Response("Error al cargar el agente", { status: 500 });
   }
-  
-  return { activePrompt };
 }
 
 // Función para manejar el guardado y versionado de prompts
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const session = await supabaseServer.auth.getSession();
   
   if (!session.data.session) {
@@ -51,7 +51,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const actionType = formData.get("actionType") as string;
 
   if (actionType === "update") {
-    // Obtener todos los campos del formulario (columnas reales de la tabla)
+    // Obtener todos los campos del formulario
     const prompt_identidad = formData.get("prompt_identidad") as string;
     const prompt_personalidad_tono = formData.get("prompt_personalidad_tono") as string;
     const prompt_frases_guia_estilo = formData.get("prompt_frases_guia_estilo") as string;
@@ -68,21 +68,21 @@ export async function action({ request }: ActionFunctionArgs) {
     }
 
     try {
-      console.log("🔧 Iniciando operación de guardado...");
-      console.log("🔧 Cliente de Supabase configurado:", !!supabaseServer);
+      console.log("🔧 Iniciando operación de guardado para agente:", params.promptId);
       
-      // Obtener el prompt activo actual para conocer la versión
-      const { data: currentPrompt, error: fetchError } = await supabaseServer
+      // Obtener el agente actual
+      const { data: currentAgent, error: fetchError } = await supabaseServer
         .from('tradefood_prompt_active')
         .select('*')
+        .eq('id', params.promptId)
         .single();
 
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error("Error fetching current prompt:", fetchError);
+      if (fetchError) {
+        console.error("Error fetching current agent:", fetchError);
         throw fetchError;
       }
 
-      const currentVersion = currentPrompt?.version_number || 0;
+      const currentVersion = currentAgent?.version_number || 0;
       const newVersion = currentVersion + 1;
       console.log(`🔄 Versión actual: ${currentVersion}, Nueva versión: ${newVersion}`);
 
@@ -133,13 +133,13 @@ export async function action({ request }: ActionFunctionArgs) {
       }
 
       // Si existe un prompt activo, moverlo al historial
-      if (currentPrompt) {
+      if (currentAgent) {
         console.log("📝 Moviendo prompt actual al historial...");
         console.log("📝 Versión que se guarda en historial:", newVersion);
         
         const historyData = {
-          config_id: currentPrompt.id, // Referencia al prompt activo
-          modified_by_user_id: userExists ? userId : null, // NULL real, no string "null"
+          config_id: currentAgent.id, // Referencia al prompt activo
+          modified_by_user_id: userExists ? userId : null,
           version_number: newVersion,
           prompt_content_identidad: prompt_identidad,
           prompt_content_personalidad_tono: prompt_personalidad_tono,
@@ -163,7 +163,7 @@ export async function action({ request }: ActionFunctionArgs) {
         console.log("✅ Historial guardado exitosamente:", historyResult);
       }
 
-      // Actualizar o crear el prompt activo
+      // Actualizar el prompt activo
       console.log("🔄 Preparando actualización del prompt activo...");
       console.log("🔄 Nueva versión que se asignará:", newVersion);
       
@@ -178,50 +178,26 @@ export async function action({ request }: ActionFunctionArgs) {
         version_number: newVersion
       };
 
-      let updatedPrompt;
-      if (currentPrompt) {
-        // Actualizar el prompt existente
-        console.log("🔄 Actualizando prompt existente con datos:", promptData);
-        console.log("🔄 ID del prompt a actualizar:", currentPrompt.id);
-        
-        const { data, error: updateError } = await supabaseAdmin
-          .from('tradefood_prompt_active')
-          .update(promptData)
-          .eq('id', currentPrompt.id)
-          .select()
-          .single();
+      console.log("🔄 Actualizando prompt existente con datos:", promptData);
+      console.log("🔄 ID del prompt a actualizar:", currentAgent.id);
+      
+      const { data, error: updateError } = await supabaseAdmin
+        .from('tradefood_prompt_active')
+        .update(promptData)
+        .eq('id', currentAgent.id)
+        .select()
+        .single();
 
-        if (updateError) {
-          console.error("❌ Error updating active prompt:", updateError);
-          console.error("❌ Detalles del error:", {
-            code: updateError.code,
-            message: updateError.message,
-            details: updateError.details,
-            hint: updateError.hint
-          });
-          throw updateError;
-        }
-        updatedPrompt = data;
-      } else {
-        // Crear un nuevo prompt activo
-        const { data, error: insertError } = await supabaseAdmin
-          .from('tradefood_prompt_active')
-          .insert([promptData])
-          .select()
-          .single();
-
-        if (insertError) {
-          console.error("Error creating active prompt:", insertError);
-          throw insertError;
-        }
-        updatedPrompt = data;
+      if (updateError) {
+        console.error("❌ Error updating active prompt:", updateError);
+        throw updateError;
       }
 
       console.log("✅ Prompt activo actualizado exitosamente");
 
       return {
         success: "Prompt actualizado correctamente",
-        prompt: updatedPrompt,
+        prompt: data,
         version: newVersion
       };
     } catch (error) {
@@ -235,7 +211,7 @@ export async function action({ request }: ActionFunctionArgs) {
   return { error: "Acción no válida" };
 }
 
-// Definir los campos del prompt con sus etiquetas (columnas reales de la tabla)
+// Definir los campos del prompt con sus etiquetas
 const promptFields = [
   { key: 'prompt_identidad', label: 'Identidad y Rol del Agente', icon: '🎭' },
   { key: 'prompt_personalidad_tono', label: 'Personalidad y Tono de Voz', icon: '😊' },
@@ -295,8 +271,8 @@ function EditableField({ fieldKey, label, value, isEditing, onChange, placeholde
   );
 }
 
-export default function AgenteFormPage() {
-  const { activePrompt } = useLoaderData<typeof loader>();
+export default function EditarAgentePage() {
+  const { agent } = useLoaderData<typeof loader>();
   const actionData = useActionData<{ error?: string; success?: string; prompt?: any; version?: number }>();
   const navigation = useNavigation();
   const { toast, showSuccess, showError, hideToast } = useToast();
@@ -308,28 +284,28 @@ export default function AgenteFormPage() {
   
   const isSubmitting = navigation.state === "submitting";
 
-  // Inicializar formData cuando se carga el prompt
+  // Inicializar formData cuando se carga el agente
   useEffect(() => {
-    if (activePrompt) {
+    if (agent) {
       const initialData: Record<string, string> = {};
       promptFields.forEach(field => {
-        initialData[field.key] = activePrompt[field.key as keyof typeof activePrompt] || '';
+        initialData[field.key] = agent[field.key as keyof typeof agent] || '';
       });
       setFormData(initialData);
     }
-  }, [activePrompt]);
+  }, [agent]);
 
   // Detectar cambios en el formulario
   useEffect(() => {
-    if (activePrompt && isEditing) {
+    if (agent && isEditing) {
       const hasFormChanges = promptFields.some(field => {
-        const currentValue = activePrompt[field.key as keyof typeof activePrompt] || '';
+        const currentValue = agent[field.key as keyof typeof agent] || '';
         const formValue = formData[field.key] || '';
         return currentValue !== formValue;
       });
       setHasChanges(hasFormChanges);
     }
-  }, [formData, activePrompt, isEditing]);
+  }, [formData, agent, isEditing]);
 
   // Manejar respuestas del servidor
   useEffect(() => {
@@ -362,10 +338,10 @@ export default function AgenteFormPage() {
   const handleCancel = () => {
     setIsEditing(false);
     // Restaurar datos originales
-    if (activePrompt) {
+    if (agent) {
       const originalData: Record<string, string> = {};
       promptFields.forEach(field => {
-        originalData[field.key] = activePrompt[field.key as keyof typeof activePrompt] || '';
+        originalData[field.key] = agent[field.key as keyof typeof agent] || '';
       });
       setFormData(originalData);
     }
@@ -373,23 +349,41 @@ export default function AgenteFormPage() {
   };
 
   const selectedFieldData = promptFields.find(field => field.key === selectedField);
-  const selectedValue = activePrompt?.[selectedField as keyof typeof activePrompt] || '';
+  const selectedValue = agent?.[selectedField as keyof typeof agent] || '';
 
   return (
     <div className="h-screen max-h-screen flex flex-col overflow-hidden bg-gray-50">
       {/* Header */}
-      <PageHeader
-        title="Agente IA Tradefood"
-        subtitle={`Gestión de Prompts - Versión ${activePrompt?.version_number || 0}`}
-        actions={
-          !isEditing ? (
-            <>
-              <a
-                href="/historial"
-                className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors duration-200 text-sm lg:text-base"
-              >
-                📋 Historial
-              </a>
+      <div className="bg-white border-b border-gray-200 p-4 lg:p-6 flex-shrink-0">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-1">
+              {agent.name}
+            </h1>
+            <p className="text-sm lg:text-base text-gray-600">
+              Edición de Prompts - Versión {agent?.version_number || 0}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <a
+              href="/agentes"
+              className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors duration-200 text-sm lg:text-base"
+            >
+              ← Volver a Agentes
+            </a>
+            <a
+              href={`/agente/${agent.id}/ver`}
+              className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors duration-200 text-sm lg:text-base"
+            >
+              👁️ Ver
+            </a>
+            <a
+              href={`/agente/${agent.id}/historial`}
+              className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors duration-200 text-sm lg:text-base"
+            >
+              📋 Historial
+            </a>
+            {!isEditing ? (
               <button
                 onClick={handleEdit}
                 className="px-4 py-2 text-white rounded-lg transition-all duration-200 text-sm lg:text-base font-medium"
@@ -397,44 +391,49 @@ export default function AgenteFormPage() {
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5a1518'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#7B1E21'}
               >
-                 Editar
+                ✏️ Editar
               </button>
-              <a
-                href="/dashboard"
-                className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors duration-200 text-sm lg:text-base"
-              >
-                ← Volver
-              </a>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={handleCancel}
-                className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors duration-200 text-sm lg:text-base"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                form="prompt-form"
-                disabled={!hasChanges || isSubmitting}
-                className={`px-4 py-2 rounded-lg transition-all duration-200 text-sm lg:text-base font-medium ${
-                  hasChanges && !isSubmitting
-                    ? 'bg-green-500 text-white hover:bg-green-600'
-                    : 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                }`}
-              >
-                {isSubmitting ? 'Guardando...' : '💾 Guardar Cambios'}
-              </button>
-            </>
-          )
-        }
-      />
+            ) : (
+              <>
+                <button
+                  onClick={handleCancel}
+                  className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors duration-200 text-sm lg:text-base"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  form="prompt-form"
+                  disabled={!hasChanges || isSubmitting}
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 text-sm lg:text-base font-medium ${
+                    hasChanges && !isSubmitting
+                      ? 'text-white'
+                      : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  }`}
+                  style={hasChanges && !isSubmitting ? { backgroundColor: '#7B1E21' } : {}}
+                  onMouseEnter={(e) => {
+                    if (hasChanges && !isSubmitting) {
+                      e.currentTarget.style.backgroundColor = '#5a1518';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (hasChanges && !isSubmitting) {
+                      e.currentTarget.style.backgroundColor = '#7B1E21';
+                    }
+                  }}
+                >
+                  {isSubmitting ? 'Guardando...' : '💾 Guardar Cambios'}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* Contenido Principal - Doble Columna */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
         {/* Columna Izquierda - Navegación de Campos (25% en desktop, 100% en móvil) */}
-        <StandardContainer className="w-full lg:w-1/4 border-b lg:border-b-0 flex flex-col overflow-hidden p-0">
+        <div className="w-full lg:w-1/4 bg-white border-b lg:border-b-0 flex flex-col overflow-hidden">
           <div className="flex-shrink-0 p-3 lg:p-4 border-b border-gray-200">
             <h2 className="text-xs font-semibold text-gray-900">
               Campos del Prompt
@@ -464,10 +463,10 @@ export default function AgenteFormPage() {
               </div>
             </nav>
           </div>
-        </StandardContainer>
+        </div>
 
         {/* Columna Derecha - Área de Contenido (75% en desktop, 100% en móvil) */}
-        <StandardContainer className="w-full lg:w-3/4 flex flex-col bg-gray-50 overflow-hidden p-0">
+        <div className="w-full lg:w-3/4 flex flex-col bg-gray-50 overflow-hidden">
           <div className="flex-shrink-0 p-3 lg:p-4">
             <h3 className="text-base lg:text-lg font-semibold text-gray-900 flex items-center">
               <span className="mr-2 lg:mr-3">{selectedFieldData?.icon}</span>
@@ -496,7 +495,7 @@ export default function AgenteFormPage() {
               />
             </form>
           </div>
-        </StandardContainer>
+        </div>
       </div>
 
       {/* Toast de notificaciones */}
